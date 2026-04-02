@@ -189,7 +189,7 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
           targetY: currentY,
           width: w,
           x: currentX,
-          y: currentY,
+          y: 0,
           vx: 0,
           vy: 0,
           locked: false,
@@ -204,6 +204,11 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
     }
 
     totalHeight = currentY;
+    
+    for (let i = 0; i < allGraphemes.length; i++) {
+      allGraphemes[i].targetY = totalHeight - allGraphemes[i].targetY - LINE_HEIGHT;
+      allGraphemes[i].y = allGraphemes[i].targetY;
+    }
     const els = [];
     for (let i = 0; i < allGraphemes.length; i++) {
       const g = allGraphemes[i];
@@ -217,7 +222,7 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
     }
 
     const lineActivationOrder = [];
-    for (let li = 0; li < lines.length; li++) {
+    for (let li = lines.length - 1; li >= 0; li--) {
       lineActivationOrder.push(li);
     }
 
