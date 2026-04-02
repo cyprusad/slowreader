@@ -81,9 +81,6 @@
       font-weight: 500;
       color: #f4c542;
     }
-    .letter.locked {
-      color: #f4c542;
-    }
     #controls {
       position: absolute;
       bottom: 20px;
@@ -136,9 +133,8 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
     const LETTER_SPACING = 1;
 
     let revealInterval = 1000;
-    let crawlY = 0;
-    let totalHeight = 0;
     let textStarted = false;
+    let activatedLines = 0;
 
     const container = document.getElementById('crawl');
     const logoEl = document.getElementById('logo');
@@ -186,13 +182,10 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
           char: g,
           lineIndex: li,
           targetX: currentX,
-          targetY: currentY,
+          baseY: currentY,
           width: w,
           x: currentX,
-          y: currentY,
-          vx: 0,
-          vy: 0,
-          locked: false,
+          y: 0,
           active: false
         });
         
@@ -203,7 +196,7 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
       currentY += LINE_HEIGHT;
     }
 
-    totalHeight = currentY;
+    const totalHeight = currentY;
     const els = [];
     for (let i = 0; i < allGraphemes.length; i++) {
       const g = allGraphemes[i];
@@ -216,112 +209,24 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
       els.push(span);
     }
 
-    const lineActivationOrder = [];
-    for (let li = 0; li < lines.length; li++) {
-      lineActivationOrder.push(li);
-    }
+    let currentLineIndex = -1;
 
-    let currentLineIndex = 0;
-
-    function activateLine(lineIndex) {
-      const startIdx = lineStartIndices[lineIndex];
-      const endIdx = lineIndex === lines.length - 1 ? allGraphemes.length : lineStartIndices[lineIndex + 1];
+    function activateNextLine() {
+      currentLineIndex++;
+      if (currentLineIndex >= lines.length) return;
+      
+      activatedLines++;
+      
+      const startIdx = lineStartIndices[currentLineIndex];
+      const endIdx = currentLineIndex === lines.length - 1 ? allGraphemes.length : lineStartIndices[currentLineIndex + 1];
       
       for (let i = startIdx; i < endIdx; i++) {
         const g = allGraphemes[i];
         g.active = true;
-        g.x = g.targetX + (Math.random() - 0.5) * 100;
-        g.y = g.targetY + 150 + Math.random() * 100;
-        g.vx = (Math.random() - 0.5) * 2;
-        g.vy = -Math.random() * 2;
-        g.locked = true;
-        els[i].classList.add('locked');
+        els[i].style.display = 'block';
       }
       
-      for (let i = 0; i < allGraphemes.length; i++) {
-        const g = allGraphemes[i];
-        if (g.active && g.locked) {
-          g.targetY -= LINE_HEIGHT;
-          g.y = g.targetY;
-        }
-      }
-    }
-
-    const DAMPING = 0.92;
-    const GRAVITY = 0.08;
-    const STIFFNESS = 0.15;
-    const BOUNCE = 0.3;
-
-    function simulate() {
-      for (let i = 0; i < allGraphemes.length; i++) {
-        const g = allGraphemes[i];
-        if (!g.active || g.locked) continue;
-        
-        g.vx = (g.x - g.vx) * DAMPING;
-        g.vy = (g.y - g.vy) * DAMPING;
-        
-        g.vy += GRAVITY;
-        
-        g.vx += (g.targetX - g.x) * STIFFNESS;
-        g.vy += (g.targetY - g.y) * STIFFNESS;
-        
-        g.vx *= 0.98;
-        g.vy *= 0.98;
-        
-        g.x += g.vx;
-        g.y += g.vy;
-      }
-
-      for (let iter = 0; iter < 4; iter++) {
-        for (let i = 0; i < allGraphemes.length - 1; i++) {
-          const a = allGraphemes[i];
-          const b = allGraphemes[i + 1];
-          
-          if (!a.active || !b.active) continue;
-          if (a.lineIndex !== b.lineIndex) continue;
-          
-          const restLength = a.width + LETTER_SPACING;
-          const ax = a.x + a.width / 2;
-          const ay = a.y + LINE_HEIGHT / 2;
-          const bx = b.x + b.width / 2;
-          const by = b.y + LINE_HEIGHT / 2;
-          
-          const dx = bx - ax;
-          const dy = by - ay;
-          const dist = Math.hypot(dx, dy) || 0.001;
-          const diff = (dist - restLength) / dist;
-          
-          const moveA = a.locked ? 0 : 0.5;
-          const moveB = b.locked ? 0 : 0.5;
-          const totalMove = moveA + moveB;
-          
-          if (totalMove > 0) {
-            a.x += dx * diff * (moveA / totalMove);
-            a.y += dy * diff * (moveA / totalMove);
-            b.x -= dx * diff * (moveB / totalMove);
-            b.y -= dy * diff * (moveB / totalMove);
-          }
-        }
-      }
-
-      const maxX = getMaxWidth();
-      const minY = -50;
-      const maxY = 800;
-      
-      for (let i = 0; i < allGraphemes.length; i++) {
-        const g = allGraphemes[i];
-        if (!g.active) continue;
-        
-        if (g.x < 0) { g.x = 0; g.vx *= -BOUNCE; }
-        if (g.x + g.width > maxX) { g.x = maxX - g.width; g.vx *= -BOUNCE; }
-        if (g.y < minY) { g.y = minY; g.vy *= -BOUNCE; }
-        if (g.y > maxY) { g.y = maxY; g.vy *= -BOUNCE; }
-        
-        if (g.locked) {
-          g.x = g.targetX;
-          g.y = g.targetY;
-        }
-      }
+      lineNumEl.textContent = activatedLines.toString();
     }
 
     function startLogoAnimation() {
@@ -336,8 +241,7 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
       
       setTimeout(() => {
         textStarted = true;
-        activateLine(lineActivationOrder[0]);
-        lineNumEl.textContent = '1';
+        activateNextLine();
       }, 4000);
     }
 
@@ -348,13 +252,9 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
       const dt = Math.min((now - lastTime) / 1000, 0.05);
       lastTime = now;
 
-      simulate();
-
-      if (textStarted) {
-        crawlY = -totalHeight + (now - startTime - 4000) * 0.015;
-        if (crawlY > 50) crawlY = 50;
-      }
-      container.style.transform = `translateX(-50%) translateY(${crawlY}px)`;
+      const crawlOffset = textStarted ? (now - startTime - 4000) * 0.015 : 0;
+      const maxCrawlOffset = 50;
+      const actualOffset = Math.min(crawlOffset, maxCrawlOffset);
 
       for (let i = 0; i < allGraphemes.length; i++) {
         const g = allGraphemes[i];
@@ -362,10 +262,13 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
         
         if (!g.active) {
           el.style.display = 'none';
-        } else {
-          el.style.display = 'block';
-          el.style.transform = `translate(${g.x}px, ${g.y}px)`;
+          continue;
         }
+        
+        const shiftUp = (activatedLines - 1 - g.lineIndex) * LINE_HEIGHT;
+        const displayY = g.baseY + shiftUp - actualOffset;
+        
+        el.style.transform = `translate(${g.targetX}px, ${displayY}px)`;
       }
 
       requestAnimationFrame(render);
@@ -375,10 +278,8 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
     startLogoAnimation();
 
     setInterval(() => {
-      if (textStarted && currentLineIndex < lineActivationOrder.length - 1) {
-        currentLineIndex++;
-        activateLine(lineActivationOrder[currentLineIndex]);
-        lineNumEl.textContent = (currentLineIndex + 1).toString();
+      if (textStarted && currentLineIndex < lines.length - 1) {
+        activateNextLine();
       }
     }, revealInterval);
 
@@ -400,13 +301,12 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
         for (let gi = 0; gi < graphemes.length && startIdx + gi < allGraphemes.length; gi++) {
           const g = allGraphemes[startIdx + gi];
           g.targetX = currentX;
-          g.targetY = currentY;
+          g.baseY = currentY;
           currentX += graphemeWidths[startIdx + gi] + LETTER_SPACING;
         }
         
         currentY += LINE_HEIGHT;
       }
-      totalHeight = currentY;
     });
   </script>
 </body>
