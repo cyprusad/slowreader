@@ -189,7 +189,7 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
           targetY: currentY,
           width: w,
           x: currentX,
-          y: 0,
+          y: currentY,
           vx: 0,
           vy: 0,
           locked: false,
@@ -204,11 +204,6 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
     }
 
     totalHeight = currentY;
-    
-    for (let i = 0; i < allGraphemes.length; i++) {
-      allGraphemes[i].targetY = totalHeight - allGraphemes[i].targetY - LINE_HEIGHT;
-      allGraphemes[i].y = allGraphemes[i].targetY;
-    }
     const els = [];
     for (let i = 0; i < allGraphemes.length; i++) {
       const g = allGraphemes[i];
@@ -222,7 +217,7 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
     }
 
     const lineActivationOrder = [];
-    for (let li = lines.length - 1; li >= 0; li--) {
+    for (let li = 0; li < lines.length; li++) {
       lineActivationOrder.push(li);
     }
 
@@ -236,11 +231,19 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
         const g = allGraphemes[i];
         g.active = true;
         g.x = g.targetX + (Math.random() - 0.5) * 100;
-        g.y = g.targetY - 100 - Math.random() * 150;
+        g.y = g.targetY + 150 + Math.random() * 100;
         g.vx = (Math.random() - 0.5) * 2;
-        g.vy = Math.random() * 2;
+        g.vy = -Math.random() * 2;
         g.locked = true;
         els[i].classList.add('locked');
+      }
+      
+      for (let i = 0; i < allGraphemes.length; i++) {
+        const g = allGraphemes[i];
+        if (g.active && g.locked) {
+          g.targetY -= LINE_HEIGHT;
+          g.y = g.targetY;
+        }
       }
     }
 
