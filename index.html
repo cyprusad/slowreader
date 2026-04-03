@@ -262,8 +262,9 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
       const crawlOffset = Math.min(timeSinceStart * 0.006, 350);
       
       const bottomY = 580;
+      const maxVisibleLines = 4;
 
-      for (let li = 0; li <= currentLineIndex; li++) {
+      for (let li = Math.max(0, currentLineIndex - maxVisibleLines + 1); li <= currentLineIndex; li++) {
         const startIdx = lineStartIndices[li];
         const endIdx = li === lines.length - 1 ? allGraphemes.length : lineStartIndices[li + 1];
         
@@ -272,8 +273,17 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
         
         for (let i = startIdx; i < endIdx; i++) {
           const g = allGraphemes[i];
+          els[i].style.display = 'inline';
           const centeredX = g.targetX - 250;
           els[i].style.transform = `translate(${centeredX}px, ${y}px)`;
+        }
+      }
+      
+      for (let li = 0; li < Math.max(0, currentLineIndex - maxVisibleLines + 1); li++) {
+        const startIdx = lineStartIndices[li];
+        const endIdx = li === lines.length - 1 ? allGraphemes.length : lineStartIndices[li + 1];
+        for (let i = startIdx; i < endIdx; i++) {
+          els[i].style.display = 'none';
         }
       }
 
