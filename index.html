@@ -80,8 +80,8 @@
       top: 0;
       left: 50%;
       transform: translateX(-50%);
-      width: 80%;
-      max-width: 800px;
+      width: 500px;
+      text-align: center;
     }
     .letter {
       position: absolute;
@@ -272,7 +272,8 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
         
         for (let i = startIdx; i < endIdx; i++) {
           const g = allGraphemes[i];
-          els[i].style.transform = `translate(${g.targetX}px, ${y}px)`;
+          const centeredX = g.targetX - 250;
+          els[i].style.transform = `translate(${centeredX}px, ${y}px)`;
         }
       }
 
