@@ -262,27 +262,18 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
       const crawlOffset = Math.min(timeSinceStart * 0.006, 350);
       
       const bottomY = 580;
-      const maxVisibleLines = 4;
-
-      for (let li = Math.max(0, currentLineIndex - maxVisibleLines + 1); li <= currentLineIndex; li++) {
-        const startIdx = lineStartIndices[li];
-        const endIdx = li === lines.length - 1 ? allGraphemes.length : lineStartIndices[li + 1];
-        
-        const linesFromBottom = currentLineIndex - li;
-        let y = bottomY - linesFromBottom * LINE_HEIGHT - crawlOffset;
-        
-        for (let i = startIdx; i < endIdx; i++) {
+      
+      const startIdx = lineStartIndices[currentLineIndex];
+      const endIdx = currentLineIndex === lines.length - 1 ? allGraphemes.length : lineStartIndices[currentLineIndex + 1];
+      
+      for (let i = 0; i < allGraphemes.length; i++) {
+        if (i >= startIdx && i < endIdx) {
           const g = allGraphemes[i];
           els[i].style.display = 'inline';
           const centeredX = g.targetX - 250;
+          const y = bottomY - crawlOffset;
           els[i].style.transform = `translate(${centeredX}px, ${y}px)`;
-        }
-      }
-      
-      for (let li = 0; li < Math.max(0, currentLineIndex - maxVisibleLines + 1); li++) {
-        const startIdx = lineStartIndices[li];
-        const endIdx = li === lines.length - 1 ? allGraphemes.length : lineStartIndices[li + 1];
-        for (let i = startIdx; i < endIdx; i++) {
+        } else {
           els[i].style.display = 'none';
         }
       }
