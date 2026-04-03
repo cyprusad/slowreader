@@ -137,8 +137,8 @@ During the battle, Rebel spies managed to steal secret plans to the Empire's ult
 
 Pursued by the Empire's sinister agents, Princess Leia races home aboard her starship, custodian of the stolen plans that can save her people and restore freedom to the galaxy....`;
 
-    const FONT = '28px "Century Gothic", "Avant Garde", sans-serif';
-    const LINE_HEIGHT = 38;
+    const FONT = '38px "Century Gothic", "Avant Garde", sans-serif';
+    const LINE_HEIGHT = 48;
     const LETTER_SPACING = 1;
 
     let revealInterval = 1000;
@@ -156,7 +156,7 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
     });
 
     function getMaxWidth() {
-      return Math.min(800, window.innerWidth * 0.8);
+      return Math.min(500, window.innerWidth * 0.5);
     }
 
     const prepared = prepareWithSegments(TEXT, FONT, { whiteSpace: 'pre-wrap' });
@@ -242,9 +242,9 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
       }
 
       const timeSinceStart = now - textStartTime;
-      const crawlOffset = Math.min(timeSinceStart * 0.012, 400);
+      const crawlOffset = Math.min(timeSinceStart * 0.012, 350);
       
-      const bottomY = 550;
+      const bottomY = 580;
 
       for (let li = 0; li <= currentLineIndex; li++) {
         const startIdx = lineStartIndices[li];
