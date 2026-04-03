@@ -86,9 +86,14 @@
     .letter {
       position: absolute;
       font-family: 'Century Gothic', 'Avant Garde', sans-serif;
-      font-size: 28px;
+      font-size: 38px;
       font-weight: 500;
       color: #f4c542;
+      opacity: 0;
+      transition: opacity 0.5s ease-in;
+    }
+    .letter.visible {
+      opacity: 1;
     }
     #controls {
       position: absolute;
@@ -240,7 +245,7 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
       const endIdx = currentLineIndex === lines.length - 1 ? allGraphemes.length : lineStartIndices[currentLineIndex + 1];
       
       for (let i = startIdx; i < endIdx; i++) {
-        els[i].style.display = 'inline';
+        els[i].classList.add('visible');
       }
       
       lineNumEl.textContent = (currentLineIndex + 1).toString();
@@ -272,7 +277,6 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
         
         for (let i = startIdx; i < endIdx; i++) {
           const g = allGraphemes[i];
-          els[i].style.display = 'inline';
           const centeredX = g.targetX - 250;
           els[i].style.transform = `translate(${centeredX}px, ${y}px)`;
         }
