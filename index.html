@@ -242,9 +242,9 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
       }
 
       const timeSinceStart = now - textStartTime;
-      const crawlOffset = timeSinceStart * 0.012;
+      const crawlOffset = Math.min(timeSinceStart * 0.012, 400);
       
-      const bottomY = 250;
+      const bottomY = 550;
 
       for (let li = 0; li <= currentLineIndex; li++) {
         const startIdx = lineStartIndices[li];
