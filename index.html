@@ -172,28 +172,45 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
     const allGraphemes = [];
     const graphemeWidths = [];
     const lineStartIndices = [];
+    const lineWidths = [];
+    const lineCharCounts = [];
 
     let currentY = 0;
+    const maxWidth = getMaxWidth();
+    
     for (let li = 0; li < lines.length; li++) {
       const line = lines[li];
       lineStartIndices.push(allGraphemes.length);
       
       const graphemes = [...segmenter.segment(line.text)];
+      const charCount = graphemes.length;
+      lineCharCounts.push(charCount);
+      
+      const lineWidth = line.width || measureCtx.measureText(line.text).width;
+      lineWidths.push(lineWidth);
+      
+      const justifyAmount = charCount > 1 ? (maxWidth - lineWidth) / (charCount - 1) : 0;
       let currentX = 0;
       
       for (let gi = 0; gi < graphemes.length; gi++) {
         const g = graphemes[gi].segment;
         const w = measureCtx.measureText(g).width;
         
+        let spacing = LETTER_SPACING;
+        if (gi > 0 && justifyAmount > 0) {
+          spacing += justifyAmount;
+        }
+        
         allGraphemes.push({
           char: g,
           lineIndex: li,
           targetX: currentX,
-          width: w
+          width: w,
+          spacing: spacing
         });
         
         graphemeWidths.push(w);
-        currentX += w + LETTER_SPACING;
+        currentX += w + spacing;
       }
       
       currentY += LINE_HEIGHT;
