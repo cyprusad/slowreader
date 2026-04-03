@@ -124,7 +124,7 @@
     <div id="crawl"></div>
     <div id="status">Line: <span id="lineNum">0</span> / <span id="totalLines">0</span></div>
     <div id="controls">
-      <label>Speed: <input type="range" id="speedSlider" min="200" max="3000" value="1000" step="100"> <span id="speedVal">1.0s</span></label>
+      <label>Speed: <input type="range" id="speedSlider" min="500" max="6000" value="2000" step="100"> <span id="speedVal">2.0s</span></label>
     </div>
   </div>
 
@@ -141,7 +141,7 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
     const LINE_HEIGHT = 48;
     const LETTER_SPACING = 1;
 
-    let revealInterval = 1000;
+    let revealInterval = 2000;
     let textStarted = false;
 
     const container = document.getElementById('crawl');
@@ -250,7 +250,7 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
       textStarted = true;
       textStartTime = performance.now();
       activateNextLine();
-    }, 4000);
+    }, 6000);
 
     function render(now) {
       if (!textStarted) {
@@ -259,7 +259,7 @@ Pursued by the Empire's sinister agents, Princess Leia races home aboard her sta
       }
 
       const timeSinceStart = now - textStartTime;
-      const crawlOffset = Math.min(timeSinceStart * 0.012, 350);
+      const crawlOffset = Math.min(timeSinceStart * 0.006, 350);
       
       const bottomY = 580;
 
